@@ -1,25 +1,31 @@
 name: Test
 
-on: [push] # You can customize the trigger event based on your needs
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
+    strategy:
+      matrix:
+        node-version: ['18.x', '19.x', '20.x']
+    
     env: # Set environment variables from repository secrets
       ETHERSCANKEY: ${{ secrets.ETHERSCANKEY }}
       RPCURL: ${{ secrets.RPCURL }}
       EXP_URL: 'https://etherscan.io'
+      
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 20 # You can specify your desired Node.js version
+          node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm install      
-      - name: Run JavaScript Script
-        run: node main.js
+        run: npm i
+
+      - name: Test Run
+        run: node test.js
