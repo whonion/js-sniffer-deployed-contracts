@@ -1,7 +1,20 @@
 {
+  "name": "deployed-contract-sniffer",
+  "version": "1.0.0",
+  "description": "TypeScript Implementation of Deploy Contract Analyzer",
+  "start": "js/main.js",
+  "author": "https://github.com/whonion",
+  "scripts": {
+    "start": "ts-node main.ts"
+
+  },
   "dependencies": {
-    "axios": "^0.27.2",
-    "dotenv": "^16.0.2",
-    "ethers": "^5.7.0"
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.1"
   }
 }
