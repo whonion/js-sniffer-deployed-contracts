@@ -1,12 +1,12 @@
 const childProcess = require("child_process");
 
 const MAX_TEST_DURATION_MS = 120000; // Test duration in milliseconds (e.g., 60 seconds)
-const SCRIPT_FILE = "main.js"; // Change this to match your main.js filename
+const SCRIPT_FILE = "main.ts"; // Change this to match your main.js filename
 
 // Function to run the main.js script for a specific duration
 function runMainScriptForDuration() {
   return new Promise((resolve, reject) => {
-    const process = childProcess.spawn("node", [SCRIPT_FILE]);
+    const process = childProcess.spawn("ts-node", [SCRIPT_FILE]);
 
     setTimeout(() => {
       process.kill(); // Terminate the script after the specified duration
