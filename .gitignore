@@ -1,6 +1,7 @@
 #contracts
 *new_contracts.txt
 /js/
+/test/
 # Logs
 logs
 *.log

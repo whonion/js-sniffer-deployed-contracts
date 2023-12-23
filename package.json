@@ -6,13 +6,14 @@
   "author": "https://github.com/whonion",
   "scripts": {
     "start": "ts-node main.ts",
-    "test": "ts-node test.ts"
-
+    "test": "ts-node test.ts",
+    "bot": "ts-node telebot.ts"
   },
   "dependencies": {
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "ethers": "^5.7.2",
+    "telegraf": "^4.15.3",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
