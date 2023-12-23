@@ -5,7 +5,8 @@
   "start": "js/main.js",
   "author": "https://github.com/whonion",
   "scripts": {
-    "start": "ts-node main.ts"
+    "start": "ts-node main.ts",
+    "test": "ts-node test.ts"
 
   },
   "dependencies": {
