@@ -1,23 +1,54 @@
 name: Test
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: ['18.x', '19.x', '20.x']
-    
-    env: # Set environment variables from repository secrets
-      ETHERSCANKEY: ${{ secrets.ETHERSCANKEY }}
-      RPCURL: ${{ secrets.RPCURL }}
-      EXP_URL: 'https://etherscan.io'
-      
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Set Global TypeScript
+        run: npm install -g typescript
+
+      - name: Build TypeScript
+        run: tsc --project tsconfig.json
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ['18.x', '19.x', '20.x']
+
+    env:
+      ETHERSCANKEY: ${{ secrets.ETHERSCANKEY }}
+      RPCURL: ${{ secrets.RPCURL }}
+      EXP_URL: 'https://arbiscan.io'
+
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -27,5 +58,5 @@ jobs:
       - name: Install Dependencies
         run: npm i
 
-      - name: Test Run
-        run: node test.js
+      - name: Test Running
+        run: npm run start
