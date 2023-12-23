@@ -1,3 +1,5 @@
+// test.ts
+
 import { spawn } from 'child_process';
 
 const MAX_TEST_DURATION_MS = 120000; // Test duration in milliseconds (e.g., 120 seconds)
@@ -32,5 +34,5 @@ runMainScriptForDuration()
   })
   .catch((error) => {
     console.error('Test failed:', error);
-    process.exit(1);
+    process.exit(1); // Terminate with a non-zero exit code to indicate failure
   });
