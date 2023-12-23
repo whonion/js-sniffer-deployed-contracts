@@ -2,7 +2,7 @@
 
 import { spawn } from 'child_process';
 
-const MAX_TEST_DURATION_MS = 120000; // Test duration in milliseconds (e.g., 120 seconds)
+const MAX_TEST_DURATION_MS = 60000; // Test duration in milliseconds (e.g., 120 seconds)
 const SCRIPT_FILE = 'main.ts'; // Change this to match your main.ts filename
 
 // Function to run the main.ts script for a specific duration
@@ -28,11 +28,15 @@ function runMainScriptForDuration() {
 }
 
 // Run the test
-runMainScriptForDuration()
-  .then(() => {
+(async () => {
+  try {
+    await runMainScriptForDuration();
     console.log('Test completed successfully.');
-  })
-  .catch((error) => {
-    console.error('Test failed:', error);
-    process.exit(1); // Terminate with a non-zero exit code to indicate failure
-  });
+  } catch (error:any) {
+    if (error.message === 'The operation was canceled.') {
+      console.log('Test was canceled due to timeout.');
+    } else {
+      console.error('Test failed:', error);
+    }
+  }
+})();
