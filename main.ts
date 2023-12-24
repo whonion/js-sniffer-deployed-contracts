@@ -90,16 +90,17 @@ async function analyzeContract(contractAddress: string, abi: any) {
 
   try {
     const [name, symbol, owner, totalSupply] = await Promise.all([
-      contract.name(),
-      contract.symbol(),
-      contract.owner(),
-      contract.totalSupply(),
+      contract.name().catch((err: Error) => { throw new Error(`Error calling name(): ${err.message}`); }),
+      contract.symbol().catch((err: Error) => { throw new Error(`Error calling symbol(): ${err.message}`); }),
+      contract.owner().catch((err: Error) => { throw new Error(`Error calling owner(): ${err.message}`); }),
+      contract.totalSupply().catch((err: Error) => { throw new Error(`Error calling totalSupply(): ${err.message}`); }),
     ]);
+
+    const formattedTotalSupply = ethers.utils.parseUnits(totalSupply, 18);
 
     console.log("Contract Name:", name);
     console.log("Contract Symbol:", symbol);
     console.log(`Contract Owner:, https://debank.com/profile/${owner}`);
-    const formattedTotalSupply = ethers.utils.parseUnits(totalSupply, 18);
     console.log("Contract TotalSupply:", `${formattedTotalSupply} ${symbol}`);
   } catch (error:any) {
     console.error("Error retrieving contract information:", error.message);

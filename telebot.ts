@@ -3,6 +3,7 @@
 import { Telegraf, Context } from 'telegraf';
 import dotenv from 'dotenv';
 import detectNewContracts, { eventEmitter } from './main';
+import { getTokenInfo, TokenInfo } from './dexapi';
 
 dotenv.config();
 
@@ -16,21 +17,43 @@ if (!botToken) {
 const bot = new Telegraf(botToken);
 
 // Listen for the 'newContract' event
-eventEmitter.on('newContract', ({ userId, chainName, contractAddress }) => {
+// Listen for the 'newContract' event
+eventEmitter.on('newContract', async ({ userId, chainName, contractAddress }) => {
   console.log(`Received newContract event: ${chainName}, ${contractAddress}`);
-  
-  // Send a message to the user about the new contract
-  bot.telegram.sendMessage(
-    userId,
-    `🧾 New contract found on chain ${chainName}: [contract](${expUrl}/address/${contractAddress})`,
-    { parse_mode: 'Markdown' }
-  )
-    .then(() => {
-      console.log(`Message sent: 🧾 New contract found on chain ${chainName}: ${expUrl}/address/${contractAddress}`);
-    })
-    .catch((error) => {
-      console.error('❌ Error sending message:', error);
-    });
+
+  try {
+    const tokenInfo: TokenInfo = await getTokenInfo(contractAddress);
+    
+    // Check if pairs array is not null and has at least one element
+    if (tokenInfo.pairs && tokenInfo.pairs.length > 0) {
+      const pair = tokenInfo.pairs[0];
+
+      // Check if Liquidity is not null and greater than 0
+      if (pair.liquidity && pair.liquidity.usd !== null && pair.liquidity.usd > 0) {
+        // Prepare the message with additional information
+        const message = `
+          🧾 New contract found on chain ${chainName}:
+          - Address: [${contractAddress}](https://dexscreener.com/${chainName}/${contractAddress})
+          - Liquidity (USD): ${pair.liquidity.usd}
+          - Price (USD): ${pair.priceUsd}
+          - Price Change: ${pair.priceChange.h24}%
+        `;
+
+        // Send the message to the user
+        bot.telegram.sendMessage(userId, message, { parse_mode: 'Markdown' });
+      } else {
+        // Liquidity is null or 0, send a different message
+        const simpleMessage = `🧾 New contract found on chain ${chainName} with no liquidity: [${contractAddress}](${expUrl}/address/${contractAddress})`;
+        bot.telegram.sendMessage(userId, simpleMessage, { parse_mode: 'Markdown' });
+      }
+    } else {
+      // Pairs array is null or empty, send a different message
+      const errorMessage = `🛑 No information available for contract: [${contractAddress}](${expUrl}/address/${contractAddress})`;
+      bot.telegram.sendMessage(userId, errorMessage, { parse_mode: 'Markdown' });
+    }
+  } catch (error) {
+    console.error('Error processing newContract event:', error);
+  }
 });
 
 // Command handler for the /run command
